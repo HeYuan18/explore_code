@@ -44,6 +44,42 @@ Arr rightShift(Arr arr, int len, int k)
     return arr;
 }
 
+Arr leftShift0(Arr arr, int len, int k)
+{
+    if(1 >= len || 0 >= k)
+    {
+        return arr;
+    }
+
+    int n = len;
+    int i = 1;
+    int p = 0, q = 0, r = 0;
+    int d = arr[r];
+    
+    k %= len;
+    while(n--)
+    {
+        q = p;
+        p = p + k;
+        p %= len;
+
+        if(r == p)
+        {
+            arr[q] = d;
+            r = k - i;
+            p = r;
+            d = arr[r];
+            ++i;
+
+            continue;
+        }
+
+        arr[q] = arr[p];
+    }
+    
+    return arr;
+}
+
 Arr rightShift0(Arr arr, int len, int k)
 {
     if(1 >= len || 0 >= k)
@@ -51,31 +87,34 @@ Arr rightShift0(Arr arr, int len, int k)
         return arr;
     }
 
-    k = k % len;
-    int i = len;
-    int m = 0, p = 0;
-    int q = arr[0], r = arr[k - 1];
-    while(i--)
+    int n = len;
+    int i = 1;
+    int p = 0, q = 0, r = 0;
+    int d = arr[r];
+    
+    k %= len;
+    while(n--)
     {
-        p = m;
-        m = m + len - k;
-        m %= len;
-        
-        if(0 == m)
+        q = p;
+        p = p + len - k;
+        p %= len;
+
+        if(r == p)
         {
-            arr[p] = q;
-            m = k - 1;
-            continue;
-        }
-        if((k - 1) == m)
-        {
-            arr[p] = r;
+            arr[q] = d;
+            r = k - i;
+            p = r;
+            d = arr[r];
+            ++i;
+
             continue;
         }
 
-        arr[p] = arr[m];
+        arr[q] = arr[p];
     }
 
+    printf("i = %d\n", i);
+    
     return arr;
 }
 
@@ -98,11 +137,14 @@ void print_arr(Arr arr, int len)
 
 int main()
 {
-    int arr[] = {1, 2, 3, 4, 5, 6, 7};
+    int arr[] = {1, 2, 3, 4, 5, 6};
     int len = sizeof(arr) / sizeof(int);
     print_arr(arr, len);
 
-    rightShift0(arr, len, 1);
+    rightShift0(arr, len, 3);
+    print_arr(arr, len);
+
+    leftShift0(arr, len, 4);
     print_arr(arr, len);
 
     return 0;
