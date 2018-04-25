@@ -6,31 +6,21 @@
  ************************************************************************/
 
 #include<ctype.h>
+#include<string.h>
 #include<unp.h>
 
-void upTOlow(char* const str, int len)
+typedef struct ope
 {
-    int i = 0;
-    for(; i < len; ++i)
-    {
-        if('a' <= str[i] && str[i] <= 'z')
-        {
-            str[i] = toupper(str[i]);
-        }
-        else if('A' <= str[i] && str[i] <= 'Z')
-        {
-            str[i] = tolower(str[i]);
-        }
-        else
-        {
-            continue;
-        }
-    }
-}
+    long a;
+    char ope;
+    long b;
+    long result;
+}Ope;
 
 void str_echo(int connfd)
 {
     int rlen = 0;
+    Ope O;
     char buff[MAXLINE];
 
     while(1)
@@ -39,7 +29,16 @@ void str_echo(int connfd)
         {
             return;
         }
-        upTOlow(buff, rlen);
+        if(sscanf(buff, "%ld%ld", &O.a, &O.b) == 2)
+        {
+            O.result = O.a + O.b;
+            memcpy(buff, &O, sizeof(Ope));
+        }
+        else
+        {
+            snprintf(buff, sizeof(buff), "input error\n");
+        }
+        rlen = sizeof(Ope);
 
         Write(connfd, buff, rlen);
     }
