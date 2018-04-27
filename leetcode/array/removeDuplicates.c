@@ -47,32 +47,35 @@ int removeDuplicates(Array arr, int len)
         return 1;
     }
     
-    int i = 0, j = 0;
-    int c = 0;
-    
-    for(; i < len; ++i)
+    int r = 0, q = 1, p = 1;
+
+    while(q < len)
     {
-        for(j = i + 1; j < len; ++j)
+        if(arr[r] < arr[q])
         {
-            if(arr[i] != arr[j])
+            ++p;
+            ++q;
+            ++r;
+        }
+        else
+        {
+            ++q;
+            if(arr[r] < arr[q] && q < len)
             {
-                continue;
-            }
-            else
-            {
-                if(j <)
-                arr[i] = arr[j + 1];
-                ++c;
+                arr[p] = arr[q];
+                ++p;
+                ++q;
+                ++r;
             }
         }
     }
     
-    return c;
+    return r + 1;
 }
 
 void print_array(Array arr, int len)
 {
-    printf("print: ");
+    printf("printA: ");
     int i = 0;
     for(; i < len; ++i)
     {
