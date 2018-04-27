@@ -42,9 +42,9 @@ int removeDuplicates(Array arr, int len)
     {
         return 0;
     }
-    if(1 == len)
+    if(1 >= len)
     {
-        return 1;
+        return len;
     }
     
     int r = 0, q = 1, p = 1;
@@ -53,6 +53,10 @@ int removeDuplicates(Array arr, int len)
     {
         if(arr[r] < arr[q])
         {
+            if(arr[p] < arr[q])
+            {
+                arr[p] = arr[q];
+            }
             ++p;
             ++q;
             ++r;
