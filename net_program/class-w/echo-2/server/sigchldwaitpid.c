@@ -12,11 +12,9 @@ void sig_chld(int signo)
     pid_t pid;
     int stat;
 
-    printf("hello\n");
-
     while(0 < (pid = waitpid(-1, &stat, WNOHANG)))
     {
-        //printf("child %d terminated\n", pid);
+        printf("child %d terminated\n", pid);
     }
 }
     
