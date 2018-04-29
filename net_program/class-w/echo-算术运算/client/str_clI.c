@@ -40,7 +40,8 @@ void str_cli(FILE* fp, int sockfd)
             }
 
             memcpy(&O, buff, sizeof(Ope));
-            snprintf(buff, sizeof(buff), "%ld + %ld = %ld\n", O.a, O.b, O.result);
+            //snprintf(buff, sizeof(buff), "%ld + %ld = %ld\n", O.a, O.b, O.result);
+            snprintf(buff, sizeof(buff), "%ld\n", O.result);
             Fputs(buff, stdout);
         }
         if(FD_ISSET(0, &rset))

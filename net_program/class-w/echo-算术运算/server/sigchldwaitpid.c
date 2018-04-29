@@ -7,12 +7,10 @@
 
 #include<unp.h>
 
-void sig_chld(int signo)
+void sig_chld(int no)
 {
     pid_t pid;
     int stat;
-
-    printf("hello\n");
 
     while(0 < (pid = waitpid(-1, &stat, WNOHANG)))
     {
