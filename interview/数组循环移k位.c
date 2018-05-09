@@ -1,7 +1,7 @@
 /*************************************************************************
 	> File Name: 数组循环移k位.c
-	> Author: HeYuan
-	> Mail: HeYuan951@Gmail.com
+	> Author: karma1996
+	> Mail:   karma1996@foxmail.com
 	> Created Time: 2018年04月23日 星期一 22时35分57秒
  ************************************************************************/
 
@@ -11,11 +11,12 @@ typedef int* Arr;
 
 Arr reverse(Arr arr, int start, int end)
 {
+    int tmp = 0;
     for(; start < end; ++start, --end)
     {
-        int s = arr[end];
+        tmp = arr[end];
         arr[end] = arr[start];
-        arr[start] = s;
+        arr[start] = tmp;
     }
 
     return arr;
