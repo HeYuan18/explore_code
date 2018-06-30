@@ -88,6 +88,8 @@ int main(int argc, char* argv[])
     }
     */
 
+    sleep(5);
+
     memset(buf, 0, sizeof(buf));
     memcpy(buf, "hello world.", strlen("hello world."));
     /*打通cli1到cli0的单向洞-----允许cli1向cli0发送数据*/
