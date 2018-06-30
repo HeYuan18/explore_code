@@ -96,6 +96,10 @@ int main(int argc, char* argv[])
     printf("rcv: %s\n", buf);
     fflush(stdout);
 
+    memset(buf, 0, sizeof(buf));
+    memcpy(buf, "hello future.", strlen("hello future."));
+    sendto(sockfd, buf, strlen(buf), 0, (SA*)&p_cli0, sizeof(SA_IN));
+
     while(1){}
 
     close(sockfd);
