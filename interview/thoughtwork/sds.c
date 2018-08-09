@@ -46,7 +46,7 @@ void getSDS(SDS *S)
 
 void printSDS(const SDS *S)
 {
-    printf("size: %d, len: %d\n", S->free + S->len, S->len);
+    printf("free: %d, len: %d\n", S->free, S->len);
     puts(S->data);
 }
 
