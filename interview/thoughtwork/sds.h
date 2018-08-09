@@ -13,6 +13,7 @@ typedef struct sds{
 void initSDS(SDS *S);
 void getSDS(SDS *S);
 void printSDS(const SDS *S);
+void clearSDS(SDS *S);
 void freeSDS(SDS *S);
 
 #endif

@@ -50,6 +50,13 @@ void printSDS(const SDS *S)
     puts(S->data);
 }
 
+void clearSDS(SDS *S)
+{
+    S->free += S->len;
+    memset(S->data, 0, S->len);
+    S->len = 0;
+}
+
 void freeSDS(SDS *S)
 {
     S->len = 0;
