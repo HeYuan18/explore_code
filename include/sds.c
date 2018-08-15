@@ -27,44 +27,44 @@ sds* sdsdup(const sds *src)
     return sdsnewlen(src->buf, src->len);
 }
 
-void sdscat(sds **dst, const char *src)
+sds* sdscat(sds **dst, const char *src)
 {
     int catlen = strlen(src);
     if((*dst)->free <= catlen)
     {
         sdsmakeroomfor(dst, catlen);
     }
-    sdscatlen(dst, src, catlen);
+    return sdscatlen(dst, src, catlen);
 }
 
-void sdscatsds(sds **dst, const sds *src)
+sds* sdscatsds(sds **dst, const sds *src)
 {
     int catlen = strlen(src->buf);
     if((*dst)->free <= catlen)
     {
         sdsmakeroomfor(dst, catlen);
     }
-    sdscatlen(dst, src->buf, catlen);
+    return sdscatlen(dst, src->buf, catlen);
 }
 
-void sdscpy(sds **dst, const char *src)
+sds* sdscpy(sds **dst, const char *src)
 {
     int cpylen = strlen(src);
     if(((*dst)->free + (*dst)->len) <= cpylen)
     {
         sdsmakeroomfor(dst, cpylen);
     }
-    sdscpylen(dst, src, cpylen);
+    return sdscpylen(dst, src, cpylen);
 }
 
-void sdscpysds(sds **dst, const sds *src)
+sds* sdscpysds(sds **dst, const sds *src)
 {
     int cpylen = strlen(src->buf);
     if(((*dst)->free + (*dst)->len) <= cpylen)
     {
         sdsmakeroomfor(dst, cpylen);
     }
-    sdscpylen(dst, src->buf, cpylen);
+    return sdscpylen(dst, src->buf, cpylen);
 }
 
 void sdsinfo(const sds *src)
@@ -94,7 +94,7 @@ sds* sdsfree(sds **src)
 
 static sds* sdsnewlen(const char *init, int initlen)
 {
-    int addlen = ((initlen % eachlen) + 2) * eachlen;
+    int addlen = ((initlen / eachlen) + 1) * eachlen;
 
     sds *sh = NULL;
     sh = (sds*)malloc(sizeof(sds) + addlen);
@@ -134,7 +134,6 @@ static sds* sdsnewstdin(void)
     {
         if(sh->free <= (int)strlen(inbuf)) //空闲空间不够重新扩大空间
         {
-
             sdsmakeroomfor(&sh, eachlen - 1);
         }
 
@@ -157,14 +156,16 @@ static sds* sdsnewstdin(void)
     return sh;
 }
 
-static void sdscatlen(sds **dst, const char *t, int len)
+static sds* sdscatlen(sds **dst, const char *t, int len)
 {
     (*dst)->free -= len;
     (*dst)->len += len;
     strncat((*dst)->buf, t, len);
+
+    return *dst;
 }
 
-static void sdscpylen(sds **dst, const char *t, int len)
+static sds* sdscpylen(sds **dst, const char *t, int len)
 {
     (*dst)->free += (*dst)->len;
     (*dst)->len = 0;
@@ -173,11 +174,13 @@ static void sdscpylen(sds **dst, const char *t, int len)
 
     (*dst)->free -= len;
     (*dst)->len += len;
+
+    return *dst;
 }
 
 static void sdsmakeroomfor(sds **src, int addlen)
 {
-    addlen = ((addlen / eachlen) + 2 ) * eachlen;
+    addlen = ((addlen / eachlen) + 1) * eachlen;
 
     (*src) = (sds*)realloc((*src), sizeof(sds) + (*src)->free + (*src)->len + sizeof(char) * addlen);
     if(NULL == (*src))
@@ -199,8 +202,7 @@ int main()
     sds *z = sdsnew("in China.");
 
 
-    sdscatsds(&x, y);
-    sdscatsds(&x, z);
+    sdscatsds(&x, sdscatsds(&y, z));
     sdscpysds(&u, x);
 
     sdsinfo(x);
