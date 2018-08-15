@@ -27,6 +27,46 @@ sds* sdsdup(const sds *src)
     return sdsnewlen(src->buf, src->len);
 }
 
+void sdscat(sds **dst, const char *src)
+{
+    int catlen = strlen(src);
+    if((*dst)->free <= catlen)
+    {
+        sdsmakeroomfor(dst, catlen);
+    }
+    sdscatlen(dst, src, catlen);
+}
+
+void sdscatsds(sds **dst, const sds *src)
+{
+    int catlen = strlen(src->buf);
+    if((*dst)->free <= catlen)
+    {
+        sdsmakeroomfor(dst, catlen);
+    }
+    sdscatlen(dst, src->buf, catlen);
+}
+
+void sdscpy(sds **dst, const char *src)
+{
+    int cpylen = strlen(src);
+    if(((*dst)->free + (*dst)->len) <= cpylen)
+    {
+        sdsmakeroomfor(dst, cpylen);
+    }
+    sdscpylen(dst, src, cpylen);
+}
+
+void sdscpysds(sds **dst, const sds *src)
+{
+    int cpylen = strlen(src->buf);
+    if(((*dst)->free + (*dst)->len) <= cpylen)
+    {
+        sdsmakeroomfor(dst, cpylen);
+    }
+    sdscpylen(dst, src->buf, cpylen);
+}
+
 void sdsinfo(const sds *src)
 {
     printf("\nsdshdr info:\n");
@@ -54,16 +94,18 @@ sds* sdsfree(sds **src)
 
 static sds* sdsnewlen(const char *init, int initlen)
 {
+    int addlen = ((initlen % eachlen) + 2) * eachlen;
+
     sds *sh = NULL;
-    sh = (sds*)malloc(sizeof(sds) + initlen + 1);
+    sh = (sds*)malloc(sizeof(sds) + addlen);
     if(NULL == sh)
     {
         printf("malloc sdsnewlen\n");
         exit(1);
     }
-    memset(sh, 0, sizeof(sds) + initlen + 1);
+    memset(sh, 0, sizeof(sds) + addlen);
 
-    sh->free = 0;
+    sh->free = addlen - initlen;
     sh->len = initlen;
     memcpy(sh->buf, init, initlen);
     
@@ -92,13 +134,8 @@ static sds* sdsnewstdin(void)
     {
         if(sh->free <= (int)strlen(inbuf)) //空闲空间不够重新扩大空间
         {
-            sh = (sds*)realloc(sh, sizeof(sds) + sh->free + sh->len + sizeof(char) * eachlen);
-            if(NULL == sh)
-            {
-                printf("realloc sdsnewstdin\n");
-                exit(1);
-            }
-            sh->free += eachlen;
+
+            sdsmakeroomfor(&sh, eachlen - 1);
         }
 
         if('\n' == inbuf[strlen(inbuf) - 1])
@@ -120,12 +157,59 @@ static sds* sdsnewstdin(void)
     return sh;
 }
 
+static void sdscatlen(sds **dst, const char *t, int len)
+{
+    (*dst)->free -= len;
+    (*dst)->len += len;
+    strncat((*dst)->buf, t, len);
+}
+
+static void sdscpylen(sds **dst, const char *t, int len)
+{
+    (*dst)->free += (*dst)->len;
+    (*dst)->len = 0;
+
+    strncpy((*dst)->buf, t, len);
+
+    (*dst)->free -= len;
+    (*dst)->len += len;
+}
+
+static void sdsmakeroomfor(sds **src, int addlen)
+{
+    addlen = ((addlen / eachlen) + 2 ) * eachlen;
+
+    (*src) = (sds*)realloc((*src), sizeof(sds) + (*src)->free + (*src)->len + sizeof(char) * addlen);
+    if(NULL == (*src))
+    {
+        printf("realloc sdsmakeroomfor\n");
+        exit(1);
+    }
+
+    memset((*src)->buf + (*src)->len, 0 , addlen);
+
+    (*src)->free += addlen;
+}
+
 int main()
 {
-    sds *x = sdsnew(NULL);
+    sds *u = sdsempty();
+    sds *x = sdsnew("I ");
+    sds *y = sdsnew("live ");
+    sds *z = sdsnew("in China.");
+
+
+    sdscatsds(&x, y);
+    sdscatsds(&x, z);
+    sdscpysds(&u, x);
 
     sdsinfo(x);
+    sdsinfo(u);
+
+    sdsfree(&u);
     sdsfree(&x);
+    sdsfree(&y);
+    sdsfree(&z);
 
     return 0;
 }
